@@ -1,7 +1,15 @@
 const player = "player";
 const computer = "computer";
+let playerScore = 0;
+let computerScore = 0;
+
+const gameLog = document.querySelector("#log");
+const playerScoreDOM = document.querySelector("#player-score");
+const computerScoreDOM = document.querySelector("#computer-score");
+const inputChoices = document.querySelectorAll(".input-choice");
+
 const choices = {
-  rock: "rock",
+  ROCK: "rock",
   paper: "paper",
   scissors: "scissors"
 };
@@ -11,32 +19,11 @@ function getComputerChoice() {
   return choices[choicesKeys[Math.floor(Math.random() * Object.keys(choices).length)]];
 }
 
-function getPlayerChoice() {
-  while (true) {
-    let playerSelection = prompt("Choose between rock paper and scissors: ").toLowerCase();
-    if (playerSelection in choices) {
-      return playerSelection;
-    }
-    else {
-      alert("Not a valid choice");
-    }
-  }
-}
-
-function getRounds() {
-  while (true) {
-    let rounds = +prompt("Rounds to play: ");
-    if(!isNaN(rounds)) {
-      return rounds;
-    }
-  }
-}
-
 function chooseWinner(playerSelection, computerSelection) {
   if (playerSelection == computerSelection) {
     return;
   }
-  else if (playerSelection === choices.rock) {
+  else if (playerSelection === choices.ROCK) {
     if (computerSelection === choices.scissors) {
       return player;
     }
@@ -45,7 +32,7 @@ function chooseWinner(playerSelection, computerSelection) {
     }
   }
   else if (playerSelection === choices.paper) {
-    if( computerSelection === choices.rock) {
+    if( computerSelection === choices.ROCK) {
       return player;
     }
     else {
@@ -62,28 +49,24 @@ function chooseWinner(playerSelection, computerSelection) {
   }
 }
 
-function playRound() {
-  let playerSelection = getPlayerChoice();
+function playRound(playerSelection) {
   let computerSelection = getComputerChoice();
   let winner = chooseWinner(playerSelection, computerSelection);
-
-  if (!winner) {
-    return "Tie!";
+  if (winner == player) {
+    playerScore++;
+    playerScoreDOM.innerText = playerScore;
+    gameLog.innerText = `YOU WIN!\nComputer chose ${computerSelection}`;
   }
-  else if(winner === player) {
-    return `You win! \nComputer chose ${computerSelection} and your ${playerSelection} beats it`;
+  else if (winner == computer){
+    computerScore++;
+    computerScoreDOM.innerText = computerScore;
+    gameLog.innerText = `YOU LOSE!\nComputer chose ${computerSelection}`;
   }
   else {
-    return `You lose! \nComputer chose ${computerSelection} and beats ${playerSelection}`;
+    gameLog.innerText = "TIE!";
   }
 }
 
-function playGame() {
-  const rounds = getRounds();
-
-  for (let i = 0; i < rounds; i++) {
-    console.log(playRound());
-  }
-}
-
-playGame();
+inputChoices.forEach(input => {
+  input.addEventListener("click", (e) => playRound(e.target.name));
+});
